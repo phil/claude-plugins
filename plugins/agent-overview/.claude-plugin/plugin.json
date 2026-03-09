@@ -1,0 +1,11 @@
+{
+  "name": "agent-overview",
+  "version": "1.0.0",
+  "description": "agent overviews, stashed in ~/.claude to allow other apps to read them",
+  "author": {
+    "name": "Phil Balchin",
+    "url": "https://github.com/phil"
+  },
+  "homepage": "https://github.com/phil/claude-plugins",
+  "license": "MIT"
+}

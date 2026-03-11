@@ -3,13 +3,21 @@
 # Resolves tmux coordinates and writes the initial SessionState JSON to
 # ~/.claude/sessions/${CLAUDE_SESSION_ID}.json
 
-set -euo pipefail
+set -eo pipefail
 
-SESSION_FILE="$HOME/.claude/sessions/${CLAUDE_SESSION_ID}.json"
-
-# Read the Claude-provided JSON payload from stdin (not used for initial write,
-# but consumed to avoid broken-pipe warnings from Claude Code).
+# Read the Claude-provided JSON payload from stdin first.
+# Claude Code passes session_id and cwd in the JSON payload, not as env vars.
 PAYLOAD="$(cat)"
+
+SESSION_ID="${CLAUDE_SESSION_ID:-$(printf '%s' "$PAYLOAD" | jq -r '.session_id // ""')}"
+WORK_DIR="${CLAUDE_WORKSPACE_PATH:-$(printf '%s' "$PAYLOAD" | jq -r '.cwd // ""')}"
+WORK_DIR="${WORK_DIR:-$PWD}"
+
+if [ -z "$SESSION_ID" ]; then
+    exit 0  # no session ID, nothing to write
+fi
+
+SESSION_FILE="$HOME/.claude/sessions/${SESSION_ID}.json"
 
 # ---------------------------------------------------------------------------
 # Resolve tmux coordinates
@@ -31,7 +39,7 @@ else
 fi
 
 # Derive project name — basename of working directory.
-PROJECT_NAME="$(basename "${CLAUDE_WORKSPACE_PATH:-$PWD}")"
+PROJECT_NAME="$(basename "$WORK_DIR")"
 
 # ---------------------------------------------------------------------------
 # Ensure sessions directory exists
@@ -55,8 +63,8 @@ NOW="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 TMP="$(mktemp)"
 jq -n \
     --argjson current "$CURRENT" \
-    --arg session_id "$CLAUDE_SESSION_ID" \
-    --arg work_dir "${CLAUDE_WORKSPACE_PATH:-$PWD}" \
+    --arg session_id "$SESSION_ID" \
+    --arg work_dir "$WORK_DIR" \
     --arg project_name "$PROJECT_NAME" \
     --arg tmux_socket "$TMUX_SOCKET_NAME" \
     --arg tmux_session "$TMUX_SESSION_NAME" \

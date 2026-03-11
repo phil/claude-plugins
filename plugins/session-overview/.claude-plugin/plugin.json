@@ -1,5 +1,5 @@
 {
-  "name": "agent-overview",
+  "name": "session-overview",
   "version": "1.0.0",
   "description": "agent overviews, stashed in ~/.claude to allow other apps to read them",
   "author": {

@@ -1,5 +1,5 @@
 {
-  "name": "Custom Claude Code Plugins",
+  "name": "claude-code-custom-plugins",
   "description": "A collection of custom plugins for Claude Code",
   "owner": {
     "name": "Phil Balchin",
@@ -7,9 +7,9 @@
   },
   "plugins": [
     {
-      "name": "agent-overview",
+      "name": "session-overview",
       "description": "Uses hooks to keep track of agent statuses",
-      "source": "./plugins/agent-overview",
+      "source": "./plugins/session-overview",
       "version": "1.0.0",
       "category": "productivity",
       "tags": ["tmux", "notifications", "multi-agent"]
